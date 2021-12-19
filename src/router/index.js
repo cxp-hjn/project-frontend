@@ -1,46 +1,50 @@
 import Vue from 'vue'
-import Router from 'vue-router'
-import store from '../store'
+import VueRouter from 'vue-router'
+import Home from '../views/Home.vue'
+import test from "../components/test";
+import FixStore from "../components/FixStore";
+import AdminstrationCarBasicInformation from "../components/AdminstrationCarBasicInformation";
+import AdminstrationCarUpload from "../components/AdminstrationCarUpload";
+Vue.use(VueRouter)
 
-Vue.use(Router)
+const routes = [
+    {
+        path: '/',
+        name: 'Home',
+        component: Home
+    },
+    {
+        path: '/FixStore',
+        name: 'FixStore',
+        component: FixStore
+    },
+    {
+        path: '/AdminstrationCarBasicInformation',
+        name: 'AdminstrationCarBasicInformation',
+        component: AdminstrationCarBasicInformation
+    },
+    {
+        path: '/AdminstrationCarUpload',
+        name: 'AdminstrationCarUpload',
+        component: AdminstrationCarUpload
+    },
+    {
+        path: '/test',
+        name: 'test',
+        component: test
+    },
+    {
+        path: '/about',
+        name: 'About',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    }
+]
 
-//解决路由跳转相同地址时报错
-const originalPush = Router.prototype.push;
-Router.prototype.push = function push(location) {
-	return originalPush.call(this, location).catch(err => err)
-};
-
-export const router = new Router({
-	routes: []
+const router = new VueRouter({
+    routes
 })
 
-// 前端登录拦截
-router.beforeEach(function (to, from, next) {
-	if (to.matched.some(record => record.meta.requireAuth)) {
-		if (store.state.username) {
-			next();
-		}
-		else {
-			next({
-				path: '/login',
-				replace: true,
-				// query: {redirect: to.fullPath} // 登录成功之后重新跳转到该路由
-			});
-		}
-	}
-	else {
-		next()
-	}
-
-	if (to.fullPath === "/" || to.fullPath === "/login") {
-		if (sessionStorage.getItem('username')) {
-			next({
-				path: from.fullPath
-			});
-		}
-		else {
-			next();
-		}
-	}
-
-});
+export default router
